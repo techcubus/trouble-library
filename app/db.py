@@ -69,9 +69,17 @@ def db_session() -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+def _migrate_add_status_column(conn: sqlite3.Connection) -> None:
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(media_items)")}
+    if "status" not in columns:
+        conn.execute("ALTER TABLE media_items ADD COLUMN status TEXT NOT NULL DEFAULT 'active'")
+
+
 def init_db() -> None:
     with db_session() as conn:
         conn.executescript(SCHEMA)
+        _migrate_add_status_column(conn)
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_media_items_status ON media_items(status)")
         for key, value in DEFAULT_SETTINGS.items():
             conn.execute(
                 "INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)",
@@ -157,17 +165,18 @@ def insert_media_item(
     file_hash: str,
     file_size: int,
     format: str,
+    status: str,
 ) -> int:
     now = _now()
     cur = conn.execute(
         """
         INSERT INTO media_items
             (media_type, title, category, subject, description, file_path,
-             file_hash, file_size, format, added_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             file_hash, file_size, format, status, added_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (media_type, title, category, subject, description, file_path,
-         file_hash, file_size, format, now, now),
+         file_hash, file_size, format, status, now, now),
     )
     media_item_id = cur.lastrowid
     _sync_fts(conn, media_item_id)
@@ -251,7 +260,7 @@ def get_media_item_by_file_path(conn: sqlite3.Connection, file_path: str) -> Opt
         SELECT m.*, e.author, e.series, e.series_index, e.cover_path
         FROM media_items m
         LEFT JOIN epub_metadata e ON e.media_item_id = m.id
-        WHERE m.file_path = ?
+        WHERE m.file_path = ? AND m.status = 'active'
         """,
         (file_path,),
     ).fetchone()
@@ -263,7 +272,20 @@ def list_media_items(conn: sqlite3.Connection) -> list[sqlite3.Row]:
         SELECT m.*, e.author, e.series, e.series_index, e.cover_path
         FROM media_items m
         LEFT JOIN epub_metadata e ON e.media_item_id = m.id
+        WHERE m.status = 'active'
         ORDER BY m.added_at DESC
+        """
+    ).fetchall()
+
+
+def list_queue_items(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    return conn.execute(
+        """
+        SELECT m.*, e.author, e.series, e.series_index, e.cover_path
+        FROM media_items m
+        LEFT JOIN epub_metadata e ON e.media_item_id = m.id
+        WHERE m.status IN ('pending', 'manual_review')
+        ORDER BY m.added_at ASC
         """
     ).fetchall()
 
@@ -280,7 +302,7 @@ def search_media_items(conn: sqlite3.Connection, query: str) -> list[sqlite3.Row
         FROM media_items_fts f
         JOIN media_items m ON m.id = f.rowid
         LEFT JOIN epub_metadata e ON e.media_item_id = m.id
-        WHERE media_items_fts MATCH ?
+        WHERE media_items_fts MATCH ? AND m.status = 'active'
         ORDER BY rank
         """,
         (query,),

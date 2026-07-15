@@ -8,4 +8,5 @@ services:
       - ./data:/data
       - ./media/inbox:/media/inbox
       - ./media/library:/media/library
+      - ./media/manual_review:/media/manual_review
     restart: unless-stopped

@@ -91,3 +91,11 @@ button.danger {
 
 .breadcrumbs { margin-bottom: 1rem; }
 .breadcrumbs a { color: var(--accent); text-decoration: none; }
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: var(--border);
+}

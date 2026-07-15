@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Review — {{ item.title }}{% endblock %}
+{% block nav %}<a href="/">Library</a> <a href="/queue">Queue</a> <a href="/settings">Settings</a>{% endblock %}
+{% block content %}
+
+<p class="muted">Status: <span class="badge">{{ item.status }}</span> · File: {{ item.file_path }}</p>
+
+<form method="post" action="/queue/{{ item.id }}/apply-file">
+  {% include "_media_fields.html" %}
+
+  <button type="submit">Apply &amp; File</button>
+  <button type="submit" formaction="/queue/{{ item.id }}/apply-db-only">Apply (DB only)</button>
+</form>
+
+<div class="danger-zone">
+  <form method="post" action="/queue/set-aside">
+    <input type="hidden" name="ids" value="{{ item.id }}">
+    <button type="submit">Set aside for manual review</button>
+  </form>
+
+  <form method="post" action="/queue/{{ item.id }}/remove"
+        onsubmit="return confirm('Remove this item from the queue? The file will be moved back to the inbox.');">
+    <button type="submit" class="danger">Remove from queue</button>
+  </form>
+</div>
+
+{% endblock %}

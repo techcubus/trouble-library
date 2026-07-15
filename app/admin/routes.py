@@ -13,10 +13,6 @@ router = APIRouter()
 def _scan_inbox() -> int:
     imported = 0
     with db.db_session() as conn:
-        organize_enabled = db.get_setting(conn, "organize_enabled") == "1"
-        organize_copy_mode = db.get_setting(conn, "organize_copy_mode") == "1"
-        path_template = db.get_setting(conn, "path_template") or config.DEFAULT_PATH_TEMPLATE
-
         for file_path in sorted(config.MEDIA_INBOX_DIR.rglob("*")):
             if not file_path.is_file() or file_path.suffix.lower() not in config.SUPPORTED_EPUB_EXTENSIONS:
                 continue
@@ -37,6 +33,7 @@ def _scan_inbox() -> int:
                 file_hash=file_hash,
                 file_size=file_path.stat().st_size,
                 format="epub",
+                status="pending",
             )
 
             cover_path = ""
@@ -56,11 +53,6 @@ def _scan_inbox() -> int:
                 cover_path=cover_path,
             )
 
-            if organize_enabled:
-                storage.organize_file(
-                    conn, media_item_id, config.MEDIA_LIBRARY_ROOT, path_template, copy=organize_copy_mode
-                )
-
             imported += 1
     return imported
 
@@ -70,9 +62,13 @@ def index(request: Request, scanned: Optional[int] = None):
     with db.db_session() as conn:
         items = db.list_media_items(conn)
         organize_enabled = db.get_setting(conn, "organize_enabled") == "1"
+        queue_count = len(db.list_queue_items(conn))
     return templates.TemplateResponse(
         "admin_index.html",
-        {"request": request, "items": items, "scanned": scanned, "organize_enabled": organize_enabled},
+        {
+            "request": request, "items": items, "scanned": scanned,
+            "organize_enabled": organize_enabled, "queue_count": queue_count,
+        },
     )
 
 

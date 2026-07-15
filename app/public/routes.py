@@ -116,7 +116,7 @@ def browse(request: Request, subpath: str = ""):
 def detail(request: Request, media_item_id: int):
     with db.db_session() as conn:
         item = db.get_media_item(conn, media_item_id)
-    if item is None:
+    if item is None or item["status"] != "active":
         raise HTTPException(status_code=404)
     return templates.TemplateResponse("public_detail.html", {"request": request, "item": item})
 
@@ -125,7 +125,7 @@ def detail(request: Request, media_item_id: int):
 def download(media_item_id: int):
     with db.db_session() as conn:
         item = db.get_media_item(conn, media_item_id)
-    if item is None:
+    if item is None or item["status"] != "active":
         raise HTTPException(status_code=404)
     filename = f"{storage.sanitize_segment(item['title']) or 'untitled'}.{item['format']}"
     return FileResponse(item["file_path"], filename=filename)
@@ -135,6 +135,6 @@ def download(media_item_id: int):
 def cover(media_item_id: int):
     with db.db_session() as conn:
         item = db.get_media_item(conn, media_item_id)
-    if item is None or not item["cover_path"]:
+    if item is None or item["status"] != "active" or not item["cover_path"]:
         raise HTTPException(status_code=404)
     return FileResponse(item["cover_path"])

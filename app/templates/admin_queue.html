@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Queue — trouble-library{% endblock %}
+{% block nav %}<a href="/">Library</a> <a href="/settings">Settings</a>{% endblock %}
+{% block content %}
+
+<p class="muted">
+  Books scanned from the inbox land here for review before they're added to
+  the library. Open an item to edit its metadata and decide where it goes,
+  or set items aside for later.
+</p>
+
+<form id="set-aside-form" method="post" action="/queue/set-aside"></form>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td><input type="checkbox" name="ids" value="{{ item.id }}" form="set-aside-form"></td>
+      <td><a href="/queue/{{ item.id }}/review">{{ item.title }}</a></td>
+      <td>{{ item.author }}</td>
+      <td><span class="badge">{{ item.status }}</span></td>
+      <td>
+        <form class="inline" method="post" action="/queue/{{ item.id }}/remove"
+              onsubmit="return confirm('Remove this item from the queue? The file will be moved back to the inbox.');">
+          <button type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="muted">Queue is empty. Scan the inbox to add items.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<button type="submit" form="set-aside-form">Set aside selected for manual review</button>
+
+{% endblock %}

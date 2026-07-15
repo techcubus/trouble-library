@@ -9,6 +9,7 @@ RUN_DIR="$ROOT_DIR/.dev-run"
 export DATA_DIR="$ROOT_DIR/data"
 export MEDIA_INBOX_DIR="$ROOT_DIR/inbox"
 export MEDIA_LIBRARY_ROOT="$ROOT_DIR/library"
+export MEDIA_MANUAL_REVIEW_DIR="$ROOT_DIR/manual_review"
 export PYTHONPATH="$ROOT_DIR"
 ADMIN_PORT="${ADMIN_PORT:-8001}"
 PUBLIC_PORT="${PUBLIC_PORT:-8000}"
@@ -65,7 +66,7 @@ status_one() {
 }
 
 start() {
-  mkdir -p "$RUN_DIR" "$DATA_DIR" "$MEDIA_INBOX_DIR" "$MEDIA_LIBRARY_ROOT"
+  mkdir -p "$RUN_DIR" "$DATA_DIR" "$MEDIA_INBOX_DIR" "$MEDIA_LIBRARY_ROOT" "$MEDIA_MANUAL_REVIEW_DIR"
   ensure_venv
   start_one "admin" app.admin.main:app "$ADMIN_PORT" "$ADMIN_PID_FILE" "$ADMIN_LOG"
   start_one "public" app.public.main:app "$PUBLIC_PORT" "$PUBLIC_PID_FILE" "$PUBLIC_LOG"

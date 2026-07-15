@@ -68,6 +68,23 @@ def compute_target_path(
     return path / filename
 
 
+def is_within(path: Path, root: Path) -> bool:
+    root = root.resolve()
+    path = path.resolve()
+    return path == root or root in path.parents
+
+
+def move_file_into(current_path: Path, target_dir: Path) -> Path:
+    """Move a file directly into target_dir, keeping its filename
+    (collision-safe). No-op if it's already there."""
+    target_dir.mkdir(parents=True, exist_ok=True)
+    if current_path.resolve().parent == target_dir.resolve():
+        return current_path
+    target_path = resolve_collision(target_dir / current_path.name)
+    shutil.move(str(current_path), str(target_path))
+    return target_path
+
+
 def prune_empty_dirs(start: Path, library_root: Path) -> None:
     """Remove start and any now-empty ancestor directories, stopping at
     (and never removing) library_root itself."""

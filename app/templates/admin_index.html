@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Admin — trouble-library{% endblock %}
-{% block nav %}<a href="/settings">Settings</a>{% endblock %}
+{% block nav %}<a href="/queue">Queue{% if queue_count %} ({{ queue_count }}){% endif %}</a> <a href="/settings">Settings</a>{% endblock %}
 {% block content %}
 
 <form method="post" action="/import/scan">
   <button type="submit">Scan inbox for new epubs</button>
 </form>
 {% if scanned is not none %}
-  <p class="muted">Imported {{ scanned }} new item(s).</p>
+  <p class="muted">
+    Scanned {{ scanned }} new item(s) into the
+    <a href="/queue">review queue</a>.
+  </p>
 {% endif %}
 <p class="muted">
   Organize mode is {{ "on" if organize_enabled else "off" }} —
