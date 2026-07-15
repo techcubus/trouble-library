@@ -76,6 +76,16 @@ button, input[type="submit"] {
 }
 
 .muted { color: var(--muted); font-size: 0.9rem; }
+
+.danger-zone {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+button.danger {
+  border-color: #a33;
+  background: #a33;
+}
 .result { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
 .result a { color: var(--accent); text-decoration: none; font-weight: 600; }
 

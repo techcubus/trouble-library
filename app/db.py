@@ -79,6 +79,22 @@ def init_db() -> None:
             )
 
 
+def reset_library(conn: sqlite3.Connection) -> None:
+    """Wipe every catalog record (media items + epub metadata + search
+    index) and reset the id counter. Files on disk (inbox, library,
+    covers) are left in place."""
+    conn.execute("DELETE FROM media_items_fts")
+    conn.execute("DELETE FROM media_items")
+    conn.execute("DELETE FROM sqlite_sequence WHERE name = 'media_items'")
+
+
+def reset_settings(conn: sqlite3.Connection) -> None:
+    """Reset all settings to their defaults."""
+    conn.execute("DELETE FROM settings")
+    for key, value in DEFAULT_SETTINGS.items():
+        conn.execute("INSERT INTO settings (key, value) VALUES (?, ?)", (key, value))
+
+
 def get_setting(conn: sqlite3.Connection, key: str) -> Optional[str]:
     row = conn.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
     return row["value"] if row else None

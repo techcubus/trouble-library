@@ -45,4 +45,11 @@
   </tbody>
 </table>
 
+<div class="danger-zone">
+  <form method="post" action="/library/reset"
+        onsubmit="return confirm('Wipe the entire catalog? This removes every item\'s metadata from the database (search index included) and cannot be undone. Files on disk in the inbox and library are left in place, so you can re-scan afterward.');">
+    <button type="submit" class="danger">Initialize library (wipe catalog)</button>
+  </form>
+</div>
+
 {% endblock %}

@@ -36,4 +36,11 @@
   <button type="submit">Save</button>
 </form>
 
+<div class="danger-zone">
+  <form method="post" action="/settings/reset"
+        onsubmit="return confirm('Reset all settings to their defaults? Organize mode will be turned off and the path template will revert to the default.');">
+    <button type="submit" class="danger">Initialize settings (reset to defaults)</button>
+  </form>
+</div>
+
 {% endblock %}

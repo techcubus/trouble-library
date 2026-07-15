@@ -1,9 +1,9 @@
 __pycache__/
 *.pyc
 .venv/
-data/*.db
-data/*.db-*
-data/covers/
+.dev-run/
+data/
 inbox/
+inbox copy/
 library/
-udo apt update
+.obsidian/

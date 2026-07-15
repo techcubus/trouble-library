@@ -68,6 +68,19 @@ def compute_target_path(
     return path / filename
 
 
+def prune_empty_dirs(start: Path, library_root: Path) -> None:
+    """Remove start and any now-empty ancestor directories, stopping at
+    (and never removing) library_root itself."""
+    root = library_root.resolve()
+    current = start.resolve()
+    if current != root and root not in current.parents:
+        return
+    while current != root and current.is_dir() and not any(current.iterdir()):
+        parent = current.parent
+        current.rmdir()
+        current = parent
+
+
 def hash_file(path: Path) -> str:
     hasher = hashlib.sha256()
     with path.open("rb") as f:
@@ -112,6 +125,9 @@ def organize_file(
     if copy and not source_already_in_library:
         shutil.copy2(str(current_path), str(target_path))
     else:
+        old_parent = current_path.resolve().parent
         shutil.move(str(current_path), str(target_path))
+        if source_already_in_library:
+            prune_empty_dirs(old_parent, library_root)
     db.update_media_item_file_path(conn, media_item_id, str(target_path))
     return target_path

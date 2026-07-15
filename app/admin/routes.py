@@ -82,6 +82,13 @@ def import_scan():
     return RedirectResponse(url=f"/?scanned={imported}", status_code=303)
 
 
+@router.post("/library/reset")
+def reset_library():
+    with db.db_session() as conn:
+        db.reset_library(conn)
+    return RedirectResponse(url="/", status_code=303)
+
+
 @router.get("/media/{media_item_id}/edit")
 def edit_form(request: Request, media_item_id: int):
     with db.db_session() as conn:
@@ -163,4 +170,11 @@ def update_settings(
         db.set_setting(conn, "organize_enabled", "1" if organize_enabled else "0")
         db.set_setting(conn, "organize_copy_mode", "1" if organize_copy_mode else "0")
         db.set_setting(conn, "path_template", path_template.strip() or config.DEFAULT_PATH_TEMPLATE)
+    return RedirectResponse(url="/settings", status_code=303)
+
+
+@router.post("/settings/reset")
+def reset_settings():
+    with db.db_session() as conn:
+        db.reset_settings(conn)
     return RedirectResponse(url="/settings", status_code=303)
