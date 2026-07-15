@@ -1,0 +1,15 @@
+{% if results %}
+  {% for item in results %}
+  <div class="result">
+    <a href="/media/{{ item.id }}">{{ item.title }}</a>
+    {% if item.author %}<span class="muted"> — {{ item.author }}</span>{% endif %}
+    {% if item.series %}
+      <span class="muted">({{ item.series }}{% if item.series_index %} #{{ item.series_index }}{% endif %})</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+{% elif query %}
+  <p class="muted">No results for &ldquo;{{ query }}&rdquo;.</p>
+{% else %}
+  <p class="muted">Start typing to search the library.</p>
+{% endif %}

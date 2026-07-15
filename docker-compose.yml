@@ -1,0 +1,11 @@
+services:
+  trouble-library:
+    build: .
+    ports:
+      - "127.0.0.1:8001:8001"  # admin — loopback only by default; expose deliberately if you need remote admin access
+      - "8000:8000"             # public search/download
+    volumes:
+      - ./data:/data
+      - ./media/inbox:/media/inbox
+      - ./media/library:/media/library
+    restart: unless-stopped

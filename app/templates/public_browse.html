@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Browse — trouble-library{% endblock %}
+{% block content %}
+
+<p class="breadcrumbs">
+  <a href="/browse">Library</a>
+  {% for crumb in breadcrumbs %}
+    / <a href="/browse/{{ crumb.path }}">{{ crumb.name }}</a>
+  {% endfor %}
+</p>
+
+{% if not directories and not files %}
+  <p class="muted">Empty directory.</p>
+{% else %}
+<table>
+  <thead>
+    <tr><th>Name</th><th>Author</th><th>Series</th><th>Format</th><th>Size</th><th>Added</th></tr>
+  </thead>
+  <tbody>
+    {% for dir in directories %}
+    <tr>
+      <td><a href="/browse/{{ dir.path }}">{{ dir.name }}/</a></td>
+      <td class="muted" colspan="4">{{ dir.item_count }} item{{ "s" if dir.item_count != 1 else "" }}</td>
+      <td></td>
+    </tr>
+    {% endfor %}
+    {% for file in files %}
+    <tr>
+      {% if file.row %}
+        <td><a href="/media/{{ file.row.id }}">{{ file.row.title }}</a></td>
+        <td class="muted">{{ file.row.author }}</td>
+        <td class="muted">{{ file.row.series }}{% if file.row.series_index %} #{{ file.row.series_index }}{% endif %}</td>
+        <td class="muted">{{ file.row.format }}</td>
+      {% else %}
+        <td>{{ file.name }}</td>
+        <td class="muted" colspan="3">untracked file</td>
+      {% endif %}
+      <td class="muted">{{ file.size }}</td>
+      <td class="muted">{{ file.added_at[:10] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock %}

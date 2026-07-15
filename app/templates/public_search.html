@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Search — trouble-library{% endblock %}
+{% block content %}
+
+<input type="search" name="q" value="{{ query }}" placeholder="Search title, author, series..."
+       hx-get="/search" hx-trigger="keyup changed delay:300ms, search"
+       hx-target="#results" hx-swap="innerHTML" autofocus>
+
+<div id="results">
+  {% include "public_results.html" %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Edit — {{ item.title }}{% endblock %}
+{% block nav %}<a href="/">Library</a> <a href="/settings">Settings</a>{% endblock %}
+{% block content %}
+
+<form method="post" action="/media/{{ item.id }}">
+  <label for="title">Title</label>
+  <input type="text" id="title" name="title" value="{{ item.title }}" required>
+
+  <label for="author">Author</label>
+  <input type="text" id="author" name="author" value="{{ item.author or '' }}">
+
+  <label for="category">Category</label>
+  <input type="text" id="category" name="category" value="{{ item.category or '' }}"
+         placeholder="Fiction, Nonfiction, Periodicals, ...">
+
+  <label for="subject">Subject</label>
+  <input type="text" id="subject" name="subject" value="{{ item.subject or '' }}"
+         placeholder="History, Science, ... (mostly for nonfiction)">
+
+  <label for="series">Series</label>
+  <input type="text" id="series" name="series" value="{{ item.series or '' }}">
+
+  <label for="series_index">Series index</label>
+  <input type="text" id="series_index" name="series_index" value="{{ item.series_index or '' }}">
+
+  <label for="publisher">Publisher</label>
+  <input type="text" id="publisher" name="publisher" value="{{ item.publisher or '' }}">
+
+  <label for="pub_date">Publication date</label>
+  <input type="text" id="pub_date" name="pub_date" value="{{ item.pub_date or '' }}">
+
+  <label for="isbn">ISBN</label>
+  <input type="text" id="isbn" name="isbn" value="{{ item.isbn or '' }}">
+
+  <label for="language">Language</label>
+  <input type="text" id="language" name="language" value="{{ item.language or '' }}">
+
+  <label for="description">Description</label>
+  <textarea id="description" name="description">{{ item.description or '' }}</textarea>
+
+  <p class="muted">File: {{ item.file_path }}</p>
+
+  <button type="submit">Save</button>
+</form>
+
+{% endblock %}

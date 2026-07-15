@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Settings — trouble-library{% endblock %}
+{% block nav %}<a href="/">Library</a>{% endblock %}
+{% block content %}
+
+<form method="post" action="/settings">
+  <label>
+    <input type="checkbox" name="organize_enabled" value="true" {{ "checked" if organize_enabled else "" }}>
+    Keep library folder organized
+  </label>
+  <p class="muted">
+    When on, files are renamed/moved on import and on every metadata edit to
+    match the path template below. When off, files stay wherever they were
+    found.
+  </p>
+
+  <label>
+    <input type="checkbox" name="organize_copy_mode" value="true" {{ "checked" if organize_copy_mode else "" }}>
+    Copy instead of move
+  </label>
+  <p class="muted">
+    When on, the original file (e.g. in the inbox) is left in place the
+    first time it's filed into the library — a copy is made instead.
+    Later re-organizing (from a metadata edit) still relocates that
+    library copy rather than making another one.
+  </p>
+
+  <label for="path_template">Path template</label>
+  <input type="text" id="path_template" name="path_template" value="{{ path_template }}">
+  <p class="muted">
+    Tokens: {{ '{category}' }}, {{ '{subject}' }}, {{ '{author}' }},
+    {{ '{series}' }}, {{ '{series_index}' }}, {{ '{title}' }}. Empty tokens
+    are dropped from the path automatically.
+  </p>
+
+  <button type="submit">Save</button>
+</form>
+
+{% endblock %}

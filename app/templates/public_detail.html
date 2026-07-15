@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} — trouble-library{% endblock %}
+{% block content %}
+
+<div style="display:flex; gap:1.5rem;">
+  {% if item.cover_path %}
+  <img class="cover" src="/media/{{ item.id }}/cover" alt="Cover of {{ item.title }}">
+  {% endif %}
+  <div>
+    <h2>{{ item.title }}</h2>
+    {% if item.author %}<p>{{ item.author }}</p>{% endif %}
+    {% if item.series %}
+      <p class="muted">{{ item.series }}{% if item.series_index %} #{{ item.series_index }}{% endif %}</p>
+    {% endif %}
+    {% if item.category %}<p class="muted">{{ item.category }}{% if item.subject %} / {{ item.subject }}{% endif %}</p>{% endif %}
+    {% if item.publisher or item.pub_date %}
+      <p class="muted">{{ item.publisher }}{% if item.pub_date %} · {{ item.pub_date }}{% endif %}</p>
+    {% endif %}
+    {% if item.language %}<p class="muted">Language: {{ item.language }}</p>{% endif %}
+    {% if item.isbn %}<p class="muted">ISBN: {{ item.isbn }}</p>{% endif %}
+    {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+
+    <p><a href="/media/{{ item.id }}/download"><button type="button">Download</button></a></p>
+  </div>
+</div>
+
+{% endblock %}

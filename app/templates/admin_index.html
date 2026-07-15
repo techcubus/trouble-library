@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Admin — trouble-library{% endblock %}
+{% block nav %}<a href="/settings">Settings</a>{% endblock %}
+{% block content %}
+
+<form method="post" action="/import/scan">
+  <button type="submit">Scan inbox for new epubs</button>
+</form>
+{% if scanned is not none %}
+  <p class="muted">Imported {{ scanned }} new item(s).</p>
+{% endif %}
+<p class="muted">
+  Organize mode is {{ "on" if organize_enabled else "off" }} —
+  <a href="/settings">change in settings</a>.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Category</th>
+      <th>Subject</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td>{{ item.title }}</td>
+      <td>{{ item.author }}</td>
+      <td>{{ item.category }}</td>
+      <td>{{ item.subject }}</td>
+      <td>
+        <a href="/media/{{ item.id }}/edit">Edit</a>
+        <form class="inline" method="post" action="/media/{{ item.id }}/delete"
+              onsubmit="return confirm('Remove this item from the library? The file on disk is left in place.');">
+          <button type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="muted">No items yet. Drop epubs in the inbox and scan.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
